@@ -1,0 +1,35 @@
+{
+    "name": "hazuli/ci4-otel",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Hazuli\\Ci4Otel\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hazuli Fidastian",
+            "email": "hazulifidastian@gmail.com"
+        }
+    ],
+    "require": {
+      "php": "^7.4",
+        "open-telemetry/opentelemetry": "^1.0",
+        "guzzlehttp/promises": "^2.0",
+        "php-http/message-factory": "^1.1",
+        "php-http/httplug": "^2.4",
+        "monolog/monolog": "^2.9",
+        "open-telemetry/opentelemetry-logger-monolog": "^1.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "codeigniter4/devkit": "^1.2"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
+        }
+    }
+}
