@@ -38,7 +38,7 @@ class SpanBuilder
         $this->parentContext = service('trace')->getParentContext($headers);
         $this->attributes = [
             TraceAttributes::HTTP_REQUEST_METHOD => $request->getMethod(),
-            TraceAttributes::URL_PATH => $request->getpath(),
+            TraceAttributes::URL_PATH => $request->getPath(),
             TraceAttributes::URL_SCHEME => preg_match('/^https:\/\//', $request->getServer()['app.baseURL']) ? 'https' : 'http',
             TraceAttributes::HTTP_ROUTE => $request->getUri()->getRoutePath(),
             TraceAttributes::URL_FULL => $request->getServer()['app.baseURL'] . $request->getServer()['REQUEST_URI'],
