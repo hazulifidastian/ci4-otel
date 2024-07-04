@@ -22,7 +22,7 @@ class SpanBuilder
     public function headersToArray(array $headers)
     {
         $array = [];
-        foreach($headers as $header) {
+        foreach ($headers as $header) {
             $array[$header->getName()] = $header->getValue();
         }
 

@@ -6,7 +6,6 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Hazuli\Ci4Otel\Support\FilterRoute;
-use Hazuli\Ci4Otel\Support\SpanBuilder;
 use Throwable;
 
 class RequestTotalMetric implements FilterInterface
@@ -41,7 +40,7 @@ class RequestTotalMetric implements FilterInterface
         if (!$filterRoute->isAll() && !$filterRoute->isMatch()) {
             return;
         }
-        
+
         $this->collectMetrics($request, $response);
     }
 
@@ -55,7 +54,7 @@ class RequestTotalMetric implements FilterInterface
             'http.method' => $request->getMethod(),
             'http.status_code' => $response->getStatusCode(),
         ];
-        
+
         $serverRequestTotalValue = service('storage')->add($meterName . service('storage')->keyFromArray($labels), 1);
         $serverRequestTotal->add($serverRequestTotalValue, $labels);
 

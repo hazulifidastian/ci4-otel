@@ -10,7 +10,8 @@ class OtelLogger
 {
     private LoggerInterface $logger;
 
-    public function __construct(OtelConfig $config) {
+    public function __construct(OtelConfig $config)
+    {
         $handler = new \OpenTelemetry\Contrib\Logs\Monolog\Handler(
             service('otel')->getLoggerProvider(),
             $config->logs['level'],

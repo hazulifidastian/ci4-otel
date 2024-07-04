@@ -22,7 +22,6 @@ use CodeIgniter\Debug\ExceptionHandlerInterface;
 use Config\Paths;
 use Hazuli\Ci4Otel\Filters\KindServerTrace;
 use Hazuli\Ci4Otel\Filters\RequestTotalMetric;
-use Psr\Http\Message\RequestInterface as MessageRequestInterface;
 use Throwable;
 
 final class OpenTelemetryExceptionHandler extends BaseExceptionHandler implements ExceptionHandlerInterface

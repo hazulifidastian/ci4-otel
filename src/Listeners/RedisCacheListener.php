@@ -2,20 +2,19 @@
 
 namespace Hazuli\Ci4Otel\Listeners;
 
-use Illuminate\Database\Events\QueryExecuted;
 use CodeIgniter\Events\Events;
 
 class RedisCacheListener
 {
     public function register()
     {
-        Events::on('CACHE_HIT', function(array $event) {
+        Events::on('CACHE_HIT', function (array $event) {
             service('span')->addEvent('cache hit', [
                 'key' => $event['key'],
             ]);
         });
 
-        Events::on('KEY_WRITTEN', function(array $event) {
+        Events::on('KEY_WRITTEN', function (array $event) {
             $ttl = $event['expired'] ?? 0;
 
             service('span')->addEvent('cache set', [

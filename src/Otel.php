@@ -36,7 +36,6 @@ use OpenTelemetry\SDK\Trace\Sampler\TraceIdRatioBasedSampler;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessorBuilder;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SemConv\ResourceAttributes;
-use Illuminate\Database\Capsule\Manager as DB;
 
 class Otel
 {
@@ -55,7 +54,7 @@ class Otel
     public function __construct(OtelConfig $config)
     {
         $this->config = $config;
-        
+
         $this->buildSDK();
 
         $this->registerListeners();
@@ -67,7 +66,7 @@ class Otel
     {
         ClockFactory::setDefault(new CarbonClock());
 
-        $resource = $this->buildResource(); 
+        $resource = $this->buildResource();
         $this->tracerProvider = $this->buildTracerProvider($resource);
         $propagator = TraceContextPropagator::getInstance();
         $this->meterProvider = $this->buildMeterProvider();
@@ -109,37 +108,44 @@ class Otel
     }
 
         private function buildMeterProvider(): MeterProviderInterface
-    {
-        $resource = ResourceInfoFactory::emptyResource()->merge(ResourceInfo::create(Attributes::create([
-            ResourceAttributes::SERVICE_NAME => $this->config->serviceName,
-        ])));
+        {
+            $resource = ResourceInfoFactory::emptyResource()->merge(ResourceInfo::create(Attributes::create([
+                ResourceAttributes::SERVICE_NAME => $this->config->serviceName,
+            ])));
 
-        $this->metricsReader = new ExportingReader(
-            new MetricExporter(
-                (new OtlpHttpTransportFactory())->create($this->config->metrics['endpoint'], 'application/json')
-            )
-        );
+            $this->metricsReader = new ExportingReader(
+                new MetricExporter(
+                    (new OtlpHttpTransportFactory())->create($this->config->metrics['endpoint'], 'application/json')
+                )
+            );
 
-        $meterProvider = new MeterProvider(
-            null,
-            $resource,
-            ClockFactory::getDefault(),
-            Attributes::factory(),
-            new InstrumentationScopeFactory(Attributes::factory()),
-            [$this->metricsReader],
-            new CriteriaViewRegistry(),
-            new WithSampledTraceExemplarFilter(),
-            new ImmediateStalenessHandlerFactory(),
-        );
+            $meterProvider = new MeterProvider(
+                null,
+                $resource,
+                ClockFactory::getDefault(),
+                Attributes::factory(),
+                new InstrumentationScopeFactory(Attributes::factory()),
+                [$this->metricsReader],
+                new CriteriaViewRegistry(),
+                new WithSampledTraceExemplarFilter(),
+                new ImmediateStalenessHandlerFactory(),
+            );
 
-        return $meterProvider;
-    }
+            return $meterProvider;
+        }
 
     private function buildLoggerProvider(ResourceInfo $resource): LoggerProviderInterface
     {
         $this->logExporter = new LogsExporter(
             (new OtlpHttpTransportFactory())->create(
-                $this->config->logs['endpoint'], 'application/json', [], null, 0.3, 5, 1)
+                $this->config->logs['endpoint'],
+                'application/json',
+                [],
+                null,
+                0.3,
+                5,
+                1
+            )
         );
 
         $logProcessor = new BatchLogRecordProcessor($this->logExporter, ClockFactory::getDefault());
@@ -215,5 +221,4 @@ class Otel
             }
         });
     }
-
 }

@@ -8,7 +8,6 @@ use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\Context\Context;
 use OpenTelemetry\SemConv\TraceAttributes;
-use Carbon\Carbon;
 use ReflectionClass;
 use Throwable;
 
@@ -108,13 +107,13 @@ class Span
 
         // TODO refactor this block
         if ($response instanceof \GuzzleHttp\Psr7\Response) {
-            $headers = $response->getHeaders();;
+            $headers = $response->getHeaders();
         } elseif ($response instanceof \CodeIgniter\HTTP\Response) {
             $spanBuilder = new SpanBuilder();
             $headers = $spanBuilder->headersToArray($response->getHeaders());
         }
 
-        foreach($headers as $key=>$value) {
+        foreach ($headers as $key=>$value) {
             $span->setAttribute($responseHeaderPrefix. 'content-type', $value);
         }
 

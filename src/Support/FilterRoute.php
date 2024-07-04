@@ -27,7 +27,7 @@ class FilterRoute
     {
         $match = false;
         $currentRouteUri = $this->route;
-        foreach($this->routes as $route) {
+        foreach ($this->routes as $route) {
             $pattern = '/' . $route . '/';
             if (preg_match($pattern, $currentRouteUri)) {
                 $match = true;

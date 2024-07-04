@@ -6,7 +6,6 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Hazuli\Ci4Otel\Support\FilterRoute;
-use Hazuli\Ci4Otel\Support\SpanBuilder;
 use Throwable;
 
 class RequestLatencyMetric implements FilterInterface
@@ -74,7 +73,7 @@ class RequestLatencyMetric implements FilterInterface
             60000,  // 60 detik
             '+Inf',
         ];
-        foreach($lestEquals as $le) {
+        foreach ($lestEquals as $le) {
             if ($le === '+Inf') {
                 $labels = array_merge($labels, ['le' => '+Inf']);
                 break;

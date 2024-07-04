@@ -13,12 +13,13 @@ class QueryExecutedListener
 {
     public function register()
     {
-        DB::listen(function(QueryExecuted $query) {
+        DB::listen(function (QueryExecuted $query) {
             $this->handle($query);
         });
     }
 
-    public function handle(QueryExecuted $event){
+    public function handle(QueryExecuted $event)
+    {
         $end = \Carbon\Carbon::now();
         $start = $end->copy()->sub((float) $event->time, 'milliseconds');
 

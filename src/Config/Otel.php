@@ -44,12 +44,12 @@ class Otel extends BaseConfig
          * notice
          * info
          * debug
-         * 
-         * Konfigurasi ini tergantung dengan nilai 
+         *
+         * Konfigurasi ini tergantung dengan nilai
          * logger.threshold = 7 di file ini
          * jika otel.log.level diset menjadi debug, maka
          * logger.threshold harus diset dengan nilai 9 (paling rendah)
-         * 
+         *
         */
         'level' => 'error',
 

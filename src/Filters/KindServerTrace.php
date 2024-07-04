@@ -54,6 +54,5 @@ class KindServerTrace implements FilterInterface
         }
 
         service('span')->stop()->detach();
-        
     }
 }

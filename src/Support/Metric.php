@@ -28,11 +28,11 @@ class Metric
     {
         switch($name) {
             case 'http.server.request.total':
-            return $this->getMeter()
-                ->createCounter('http.server.request.total', 'request', 'jumlah request');
+                return $this->getMeter()
+                    ->createCounter('http.server.request.total', 'request', 'jumlah request');
             case 'http.server.request.latency.bucket':
-            return $this->getMeter()
-                ->createCounter('http.server.request.latency.bucket', 'ms', 'latency request bucket');
+                return $this->getMeter()
+                    ->createCounter('http.server.request.latency.bucket', 'ms', 'latency request bucket');
             default:
                 throw new Exception("Meter {$name} tidak tersedia.");
         }
