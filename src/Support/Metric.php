@@ -21,7 +21,11 @@ class Metric
 
     public function collect(): bool
     {
-        return service('otel')->getMetricsReader()->collect();
+        try {
+            return service('otel')->getMetricsReader()->collect();
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     public function getDefaultMeter(string $name)

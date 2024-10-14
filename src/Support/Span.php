@@ -70,7 +70,11 @@ class Span
 
     public function detach(): self
     {
-        (array_pop($this->scopes))->detach();
+        try {
+            (array_pop($this->scopes))->detach();
+        } catch (Throwable $e) {
+            //
+        }
 
         return $this;
     }

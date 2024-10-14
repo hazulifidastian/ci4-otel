@@ -6,6 +6,7 @@ use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\Context\ContextInterface;
 use OpenTelemetry\SemConv\TraceAttributes;
 use CodeIgniter\HTTP\IncomingRequest;
+use Throwable;
 
 class SpanBuilder
 {
@@ -47,8 +48,15 @@ class SpanBuilder
             TraceAttributes::SERVER_ADDRESS => $request->getServer()['SERVER_ADDR'],
 
             TraceAttributes::NETWORK_PROTOCOL_VERSION => $request->getProtocolVersion(),
-            TraceAttributes::ENDUSER_ID => auth()->user()->email ?? null,
         ];
+
+        try {
+            $this->attributes = array_merge($this->attributes, [
+                TraceAttributes::ENDUSER_ID => auth()->user()->email ?? null,
+            ]);
+        } catch(Throwable $e) {
+            //
+        }
 
         $this->headers($headers);
 

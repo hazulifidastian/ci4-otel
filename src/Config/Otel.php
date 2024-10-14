@@ -6,6 +6,7 @@ use CodeIgniter\Config\BaseConfig;
 
 class Otel extends BaseConfig
 {
+    public $enabled = false;
     public $serviceName;
     public $deploymentEnvironment;
     public $traces = [

@@ -19,21 +19,26 @@ use OpenTelemetry\SDK\Common\Instrumentation\InstrumentationScopeFactory;
 use OpenTelemetry\SDK\Common\Time\ClockFactory;
 use OpenTelemetry\SDK\Logs\LoggerProvider;
 use OpenTelemetry\SDK\Logs\LogRecordExporterInterface;
+use OpenTelemetry\SDK\Logs\NoopLoggerProvider;
 use OpenTelemetry\SDK\Logs\Processor\BatchLogRecordProcessor;
 use OpenTelemetry\SDK\Metrics\Exemplar\ExemplarFilter\WithSampledTraceExemplarFilter;
 use OpenTelemetry\SDK\Metrics\MeterProvider;
 use OpenTelemetry\SDK\Metrics\MeterProviderInterface;
 use OpenTelemetry\SDK\Metrics\MetricReader\ExportingReader;
+use OpenTelemetry\SDK\Metrics\NoopMeterProvider;
 use OpenTelemetry\SDK\Metrics\StalenessHandler\ImmediateStalenessHandlerFactory;
 use OpenTelemetry\SDK\Metrics\View\CriteriaViewRegistry;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use OpenTelemetry\SDK\Resource\ResourceInfoFactory;
 use OpenTelemetry\SDK\Sdk;
+use OpenTelemetry\SDK\Trace\NoopTracerProvider;
 use OpenTelemetry\SDK\Trace\Sampler\AlwaysOffSampler;
 use OpenTelemetry\SDK\Trace\Sampler\AlwaysOnSampler;
 use OpenTelemetry\SDK\Trace\Sampler\ParentBased;
 use OpenTelemetry\SDK\Trace\Sampler\TraceIdRatioBasedSampler;
+use OpenTelemetry\SDK\Trace\SpanExporter\InMemoryExporter;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessorBuilder;
+use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SemConv\ResourceAttributes;
 
@@ -91,6 +96,10 @@ class Otel
 
     private function buildTracerProvider(ResourceInfo $resource): TracerProviderInterface
     {
+        if ($this->config->enabled === false) {
+            return new NoopTracerProvider();
+        }
+
         if ($this->config->traces['exporter'] === 'otlp') {
             $transport = (new OtlpHttpTransportFactory())->create($this->config->traces['endpoint'], 'application/json');
         }
@@ -107,35 +116,43 @@ class Otel
         return $tracerProvider;
     }
 
-        private function buildMeterProvider(): MeterProviderInterface
-        {
-            $resource = ResourceInfoFactory::emptyResource()->merge(ResourceInfo::create(Attributes::create([
-                ResourceAttributes::SERVICE_NAME => $this->config->serviceName,
-            ])));
-
-            $this->metricsReader = new ExportingReader(
-                new MetricExporter(
-                    (new OtlpHttpTransportFactory())->create($this->config->metrics['endpoint'], 'application/json')
-                )
-            );
-
-            $meterProvider = new MeterProvider(
-                null,
-                $resource,
-                ClockFactory::getDefault(),
-                Attributes::factory(),
-                new InstrumentationScopeFactory(Attributes::factory()),
-                [$this->metricsReader],
-                new CriteriaViewRegistry(),
-                new WithSampledTraceExemplarFilter(),
-                new ImmediateStalenessHandlerFactory(),
-            );
-
-            return $meterProvider;
+    private function buildMeterProvider(): MeterProviderInterface
+    {
+        if ($this->config->enabled === false) {
+            return new NoopMeterProvider();
         }
+
+        $resource = ResourceInfoFactory::emptyResource()->merge(ResourceInfo::create(Attributes::create([
+            ResourceAttributes::SERVICE_NAME => $this->config->serviceName,
+        ])));
+
+        $this->metricsReader = new ExportingReader(
+            new MetricExporter(
+                (new OtlpHttpTransportFactory())->create($this->config->metrics['endpoint'], 'application/json')
+            )
+        );
+
+        $meterProvider = new MeterProvider(
+            null,
+            $resource,
+            ClockFactory::getDefault(),
+            Attributes::factory(),
+            new InstrumentationScopeFactory(Attributes::factory()),
+            [$this->metricsReader],
+            new CriteriaViewRegistry(),
+            new WithSampledTraceExemplarFilter(),
+            new ImmediateStalenessHandlerFactory(),
+        );
+
+        return $meterProvider;
+    }
 
     private function buildLoggerProvider(ResourceInfo $resource): LoggerProviderInterface
     {
+        if ($this->config->enabled === false) {
+            return new NoopLoggerProvider();
+        }
+
         $this->logExporter = new LogsExporter(
             (new OtlpHttpTransportFactory())->create(
                 $this->config->logs['endpoint'],
